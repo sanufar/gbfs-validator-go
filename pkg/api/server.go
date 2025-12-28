@@ -4,6 +4,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 
 	"github.com/gbfs-validator-go/pkg/fetcher"
 	"github.com/gbfs-validator-go/pkg/gbfs"
@@ -58,6 +59,7 @@ func (s *Server) setupRoutes() {
 	
 	s.mux.HandleFunc("/api/gbfs", s.handleGBFS)
 	s.mux.HandleFunc("/api/proxy", s.handleProxy)
+	s.mux.HandleFunc("/api/config", s.handleConfig)
 
 	s.mux.HandleFunc("/health", s.handleHealth)
 	
@@ -349,6 +351,13 @@ func (s *Server) handleValidatorSummary(w http.ResponseWriter, r *http.Request) 
 // handleHealth returns a basic liveness response.
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, map[string]string{"status": "healthy"})
+}
+
+// handleConfig returns client configuration derived from environment.
+func (s *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
+	respondJSON(w, http.StatusOK, map[string]string{
+		"googleMapsApiKey": os.Getenv("GOOGLE_MAPS_API_KEY"),
+	})
 }
 
 // respondJSON writes a JSON response.

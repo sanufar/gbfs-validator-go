@@ -8,11 +8,16 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gbfs-validator-go/pkg/env"
 	"github.com/gbfs-validator-go/pkg/api"
 )
 
 // main configures and runs the HTTP server.
 func main() {
+	if err := env.LoadFile(".env"); err != nil {
+		log.Printf("Failed to load .env: %v", err)
+	}
+
 	port := flag.Int("port", 8080, "Server port")
 	staticDir := flag.String("static", "", "Directory containing static files for viewer (optional)")
 	flag.Parse()

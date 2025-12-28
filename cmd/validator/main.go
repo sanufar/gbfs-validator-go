@@ -13,12 +13,17 @@ import (
 	"time"
 
 	"github.com/gbfs-validator-go/pkg/api"
+	"github.com/gbfs-validator-go/pkg/env"
 	"github.com/gbfs-validator-go/pkg/fetcher"
 	"github.com/gbfs-validator-go/pkg/validator"
 )
 
 // main parses flags and chooses CLI or server mode.
 func main() {
+	if err := env.LoadFile(".env"); err != nil {
+		log.Printf("Failed to load .env: %v", err)
+	}
+
 	var (
 		port         = flag.Int("port", 8080, "Port to listen on")
 		url          = flag.String("url", "", "GBFS feed URL to validate (CLI mode)")
