@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GBFS</title>
+  <link href="https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/deck.gl@9.0.0/dist.min.js"></script>
+  <link rel="stylesheet" href="./styles.css" />
+
+</head>
+<body>
+  <div class="app">
+    <div class="mobile-pull-tab" id="mobile-pull-tab"></div>
+    <button class="sidebar-toggle" id="sidebar-toggle"></button>
+    <aside class="sidebar">
+      <div class="resize-handle" id="resize-handle"></div>
+      <div class="sidebar-header">
+        <div class="logo">GBFS VIEWER</div>
+        <div class="input-row">
+          <input type="text" id="url" placeholder="autodiscovery url" />
+          <button class="btn" id="load-btn">GO</button>
+        </div>
+        <div class="presets">
+          <button class="preset" data-preset="nyc">NYC</button>
+          <button class="preset" data-preset="chi">CHI</button>
+          <button class="preset" data-preset="dc">DC</button>
+          <button class="preset" data-preset="sf">SF</button>
+          <button class="preset" data-preset="bos">BOS</button>
+        </div>
+        <div class="provider-row">
+          <span>Provider</span>
+          <span class="provider-name" id="system-name-inline">—</span>
+        </div>
+      </div>
+      <div class="panels">
+        <div class="panel system-panel">
+          <div class="panel-title"><span>SYSTEM</span><span id="version">—</span></div>
+          <div class="panel-body">
+            <div id="system-name" style="font-weight:500;margin-bottom:2px;">—</div>
+            <div id="system-meta" style="color:var(--muted);">—</div>
+          </div>
+        </div>
+        
+        <div class="panel collapsible" id="panel-data">
+          <div class="panel-title">
+            <span>DATA</span>
+            <span class="panel-title-right">
+              <span class="panel-chevron">▸</span>
+            </span>
+          </div>
+          <div class="panel-content">
+            <div class="panel-body">
+              <div class="data-table">
+                <div class="data-row"><span class="data-label">Stations</span><span class="data-value" id="d-stations">—</span></div>
+                <div class="data-row"><span class="data-label">Free Vehicles</span><span class="data-value" id="d-vehicles">—</span></div>
+                <div class="data-row"><span class="data-label">Bikes Avail</span><span class="data-value" id="d-bikes">—</span></div>
+                <div class="data-row"><span class="data-label">Docks Avail</span><span class="data-value" id="d-docks">—</span></div>
+                <div class="data-row"><span class="data-label">Capacity</span><span class="data-value" id="d-capacity">—</span></div>
+                <div class="data-row"><span class="data-label">Utilization</span><span class="data-value" id="d-util">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="panel collapsible" id="panel-validation">
+          <div class="panel-title">
+            <span>VALIDATION</span>
+            <span class="panel-title-right">
+              <span id="v-version">—</span>
+              <span class="panel-chevron">▸</span>
+            </span>
+          </div>
+          <div class="panel-content">
+            <div class="validation-header">
+              <div class="status-indicator" id="v-dot"></div>
+              <span id="v-status">Not validated</span>
+              <button class="btn secondary" style="margin-left:auto;padding:4px 8px;font-size:10px;" id="validate-btn">CHECK</button>
+            </div>
+            <div class="panel-body hidden" id="errors-wrap">
+              <div class="errors-list" id="errors-list"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="panel legend-panel">
+          <div class="panel-title"><span>LEGEND</span></div>
+          <div class="panel-body">
+            <div class="legend">
+              <div class="legend-item"><div class="legend-dot high"></div><span>>50%</span></div>
+              <div class="legend-item"><div class="legend-dot med"></div><span>20–50%</span></div>
+              <div class="legend-item"><div class="legend-dot low"></div><span><20%</span></div>
+              <div class="legend-item"><div class="legend-dot off"></div><span>Offline</span></div>
+              <div class="legend-item"><div class="legend-dot vehicle"></div><span>Vehicle</span></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="panel collapsible" id="panel-feeds">
+          <div class="panel-title">
+            <span>FEEDS</span>
+            <span class="panel-title-right">
+              <button class="btn secondary feed-collapse-btn" id="feeds-collapse-btn">−</button>
+              <span class="panel-chevron">▸</span>
+            </span>
+          </div>
+          <div class="panel-content">
+            <div class="panel-body">
+              <div id="feeds-list" style="font-size:10px;color:var(--muted);">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mobile-cover" id="mobile-cover"></div>
+      <div class="mobile-drag-handle" id="mobile-drag-handle"></div>
+    </aside>
+    
+    <main class="map-wrap">
+      <div id="map"></div>
+      <div class="tooltip" id="tooltip" style="display:none;"></div>
+      <div class="loading-overlay" id="loading">LOADING</div>
+      <div class="map-footer">
+        <span id="coords">—</span>
+        <span><span class="map-footer-label">Updated:</span><span id="time">—</span></span>
+      </div>
+      <div id="streetview-panel" class="streetview-panel hidden">
+        <div class="streetview-header">
+          <span>STREET VIEW</span>
+          <div class="streetview-controls">
+            <button class="streetview-btn" title="Expand/Collapse" id="sv-expand-btn">⛶</button>
+            <button class="streetview-btn" title="Close" id="sv-close-btn">×</button>
+          </div>
+        </div>
+        <div id="streetview-content"></div>
+        <div class="streetview-info">
+          <span id="sv-station-name">—</span>
+        </div>
+      </div>
+      <div id="mini-map" class="mini-map">
+        <div class="mini-map-header">
+          <span>MAP</span>
+          <button class="streetview-btn" id="mini-map-swap-btn" title="Swap back">⛶</button>
+        </div>
+        <div id="mini-map-content" class="mini-map-content"></div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
