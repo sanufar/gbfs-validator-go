@@ -10,27 +10,26 @@
       "format": "date-time"
     },
     "ttl": {
-      "description": "Number of seconds before the data in the feed will be updated again.",
+      "description": "Number of seconds before the data in the feed will be updated again (0 if the data should always be refreshed).",
       "type": "integer",
       "minimum": 0
     },
     "version": {
-      "description": "GBFS version number to which the feed conforms.",
+      "description": "GBFS version number to which the feed conforms, according to the versioning framework (added in v1.1).",
       "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+.*$"
+      "const": "3.0"
     },
     "data": {
-      "description": "Response data in the form of name:value pairs.",
       "type": "object",
       "properties": {
         "feeds": {
-          "description": "An array of all of the feeds that are published by the auto-discovery file.",
+          "description": "An array of all of the feeds that are published by the auto-discovery file. Each element in the array is an object with the keys below.",
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
               "name": {
-                "description": "Key identifying the type of feed this is.",
+                "description": "Key identifying the type of feed this is. The key must be the base file name defined in the spec for the corresponding feed type.",
                 "type": "string",
                 "enum": [
                   "gbfs",
@@ -40,11 +39,10 @@
                   "station_information",
                   "station_status",
                   "vehicle_status",
+                  "system_alerts",
                   "system_regions",
                   "system_pricing_plans",
-                  "system_alerts",
-                  "geofencing_zones",
-                  "manifest"
+                  "geofencing_zones"
                 ]
               },
               "url": {
@@ -54,11 +52,18 @@
               }
             },
             "required": ["name", "url"]
+          },
+          "minItems": 1,
+          "contains": {
+            "properties": {
+              "name": { "const": "system_information" }
+            }
           }
         }
       },
       "required": ["feeds"]
     }
   },
+  "additionalProperties": false,
   "required": ["last_updated", "ttl", "version", "data"]
 }
