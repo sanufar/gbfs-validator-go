@@ -1,0 +1,237 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/MobilityData/gbfs/blob/v3.0/gbfs.md#system_informationjson",
+  "description": "Details including system operator, system location, year implemented, URL, contact info, time zone.",
+  "type": "object",
+  "properties": {
+    "last_updated": {
+      "description": "Last time the data in the feed was updated in RFC3339 format.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "ttl": {
+      "description": "Number of seconds before the data in the feed will be updated again.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "version": {
+      "description": "GBFS version number to which the feed conforms.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+.*$"
+    },
+    "data": {
+      "description": "Response data in the form of name:value pairs.",
+      "type": "object",
+      "properties": {
+        "system_id": {
+          "description": "Identifier for this vehicle share system.",
+          "type": "string"
+        },
+        "languages": {
+          "description": "List of languages used in translated strings.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$"
+          },
+          "minItems": 1
+        },
+        "name": {
+          "description": "Name of the system to be displayed to customers.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "description": "The translated text.",
+                "type": "string"
+              },
+              "language": {
+                "description": "IETF BCP 47 language code.",
+                "type": "string",
+                "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$"
+              }
+            },
+            "required": ["text", "language"]
+          },
+          "minItems": 1
+        },
+        "opening_hours": {
+          "description": "Hours of operation for the system in OSM opening_hours format.",
+          "type": "string"
+        },
+        "short_name": {
+          "description": "Optional abbreviation for the system.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": { "type": "string" },
+              "language": { "type": "string" }
+            },
+            "required": ["text", "language"]
+          }
+        },
+        "operator": {
+          "description": "Name of the system operator.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": { "type": "string" },
+              "language": { "type": "string" }
+            },
+            "required": ["text", "language"]
+          }
+        },
+        "url": {
+          "description": "URL of the vehicle share system.",
+          "type": "string",
+          "format": "uri"
+        },
+        "purchase_url": {
+          "description": "URL where a customer can purchase a membership.",
+          "type": "string",
+          "format": "uri"
+        },
+        "start_date": {
+          "description": "Date that the system began operations.",
+          "type": "string",
+          "format": "date"
+        },
+        "phone_number": {
+          "description": "Voice telephone number for the specified system.",
+          "type": "string"
+        },
+        "email": {
+          "description": "Email address for customer support.",
+          "type": "string",
+          "format": "email"
+        },
+        "feed_contact_email": {
+          "description": "Technical contact for feed questions.",
+          "type": "string",
+          "format": "email"
+        },
+        "timezone": {
+          "description": "The time zone where the system is located.",
+          "type": "string"
+        },
+        "license_id": {
+          "description": "SPDX identifier for the license under which the feed is provided.",
+          "type": "string"
+        },
+        "license_url": {
+          "description": "URL of the license under which the feed is provided.",
+          "type": "string",
+          "format": "uri"
+        },
+        "attribution_organization_name": {
+          "description": "Organization to credit for providing data.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": { "type": "string" },
+              "language": { "type": "string" }
+            },
+            "required": ["text", "language"]
+          }
+        },
+        "attribution_url": {
+          "description": "URL to provide attribution.",
+          "type": "string",
+          "format": "uri"
+        },
+        "brand_assets": {
+          "description": "Object containing branding information about the system.",
+          "type": "object",
+          "properties": {
+            "brand_last_modified": {
+              "type": "string",
+              "format": "date"
+            },
+            "brand_image_url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "brand_image_url_dark": {
+              "type": "string",
+              "format": "uri"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            },
+            "brand_terms_url": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": ["brand_last_modified", "brand_image_url"]
+        },
+        "terms_url": {
+          "description": "URL where the terms of service are defined.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": { "type": "string", "format": "uri" },
+              "language": { "type": "string" }
+            },
+            "required": ["text", "language"]
+          }
+        },
+        "terms_last_updated": {
+          "description": "Date on which the terms of service were last updated.",
+          "type": "string",
+          "format": "date"
+        },
+        "privacy_url": {
+          "description": "URL where the privacy policy is defined.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": { "type": "string", "format": "uri" },
+              "language": { "type": "string" }
+            },
+            "required": ["text", "language"]
+          }
+        },
+        "privacy_last_updated": {
+          "description": "Date on which the privacy policy was last updated.",
+          "type": "string",
+          "format": "date"
+        },
+        "rental_apps": {
+          "description": "Contains rental app information.",
+          "type": "object",
+          "properties": {
+            "android": {
+              "type": "object",
+              "properties": {
+                "store_uri": { "type": "string", "format": "uri" },
+                "discovery_uri": { "type": "string", "format": "uri" }
+              }
+            },
+            "ios": {
+              "type": "object",
+              "properties": {
+                "store_uri": { "type": "string", "format": "uri" },
+                "discovery_uri": { "type": "string", "format": "uri" }
+              }
+            }
+          }
+        },
+        "manifest_url": {
+          "description": "URL of the manifest.json file.",
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": ["system_id", "languages", "name", "timezone", "opening_hours", "feed_contact_email"]
+    }
+  },
+  "required": ["last_updated", "ttl", "version", "data"]
+}
